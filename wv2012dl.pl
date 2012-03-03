@@ -8,6 +8,7 @@
 # в текущий каталог.
 
 # Copyright Alexander S. Kharitonov <askh@askh.ru>, 2012
+# License: GPL 3
 
 use strict;
 use warnings;
