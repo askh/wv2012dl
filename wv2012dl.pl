@@ -40,7 +40,7 @@ sub parse_m3u8($)
 sub create_file_name($$)
 {
     my($time, $number) = @_;
-    return sprintf("%010d-%010d.mpg", $time, $number);
+    return sprintf("%010d-%04d.mpg", $time, $number);
 }
 
 my $MAX_NET_ERRORS = 10;
@@ -59,7 +59,7 @@ if(!defined $m3u8_url) {
 }
 
 my $server;
-if($m3u8_url !~ m[^https?://([^/])+/]) {
+if($m3u8_url !~ m[^(https?://[^/]+)/]) {
     print "Wrong url: $m3u8_url\n";
 } else {
     $server = $1;
@@ -84,6 +84,7 @@ while(1) {
         print "Wrong M3U8 data: $m3u8_data";
         exit 1;
     }
+    print "M3U8 file Ok\n";
     my(@urls) = @{$m3u8->{data}};
     my @download_urls;
     my %new_urls = map { $_ => 1 } @urls;
@@ -96,11 +97,15 @@ while(1) {
     my $err_video = 0;
     my $video_resp;
     foreach my $url (@download_urls) {
-        $video_resp = $ua->get("$server$url");
+        my $video_url = "$server$url";
+        print "Downloading video $video_url... ";
+        $video_resp = $ua->get($video_url);
         if(!$video_resp->is_success) {
             $err_video = 1;
+            print "Fail\n";
             next;
         }
+        print "Ok\n";
         $err_video = 0;
         my $time1 = time();
         if($time1 != $time) {
